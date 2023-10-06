@@ -10,6 +10,7 @@ def collate_fn(dataset_items: List[dict]):
     Collate and pad fields in dataset items
     """
 
+    
     spec_lengths = []
     text_encoded_length = []
     for ds in dataset_items:
@@ -21,16 +22,21 @@ def collate_fn(dataset_items: List[dict]):
     batch_encoded_text = torch.zeros(len(text_encoded_length), max(text_encoded_length))
 
     texts = []
+    audio_path = []
     for i, ds in enumerate(dataset_items):
         batch_spectrogram[i, :, :spec_lengths[i]] = ds['spectrogram']
         batch_encoded_text[i, :text_encoded_length[i]] = ds['text_encoded']
         texts.append(ds['text'])
+        audio_path.append(ds['audio_path'])
 
     text_encoded_length = torch.tensor(text_encoded_length).long()
+    spec_lengths = torch.tensor(spec_lengths).long()
 
     return {
         'spectrogram': batch_spectrogram,
+        'spectrogram_length': spec_lengths,
         'text_encoded': batch_encoded_text,
         'text_encoded_length': text_encoded_length,
-        'text': texts
+        'text': texts,
+        'audio_path': audio_path
     }
