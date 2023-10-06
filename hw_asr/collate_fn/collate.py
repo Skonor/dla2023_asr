@@ -13,17 +13,17 @@ def collate_fn(dataset_items: List[dict]):
     spec_lengths = []
     text_encoded_length = []
     for ds in dataset_items:
-        spec_lengths.append(ds['spectrogram'].shape[1])
-        text_encoded_length.append(ds['encoded_text'].shape[0])
+        spec_lengths.append(ds['spectrogram'].shape[-1])
+        text_encoded_length.append(ds['text_encoded'].shape[-1])
 
-    spec_dim = dataset_items[0]['spectrogram'].shape[0]
+    spec_dim = dataset_items[0]['spectrogram'].shape[1]
     batch_spectrogram = torch.zeros(len(spec_lengths), spec_dim, max(spec_lengths))
-    batch_encoded_text = torch.zeors(len(text_encoded_length), max(text_encoded_length))
+    batch_encoded_text = torch.zeros(len(text_encoded_length), max(text_encoded_length))
 
     texts = []
     for i, ds in enumerate(dataset_items):
-        batch_spectrogram[i, :spec_lengths[i]] = ds['spectrogram']
-        batch_encoded_text[i, :text_encoded_length[i]] = ds['encoded_text']
+        batch_spectrogram[i, :, :spec_lengths[i]] = ds['spectrogram']
+        batch_encoded_text[i, :text_encoded_length[i]] = ds['text_encoded']
         texts.append(ds['text'])
 
     text_encoded_length = torch.tensor(text_encoded_length).long()
@@ -31,6 +31,6 @@ def collate_fn(dataset_items: List[dict]):
     return {
         'spectrogram': batch_spectrogram,
         'text_encoded': batch_encoded_text,
-        'text_encoded_legnth': text_encoded_length,
+        'text_encoded_length': text_encoded_length,
         'text': texts
     }
