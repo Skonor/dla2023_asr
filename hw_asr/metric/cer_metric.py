@@ -25,3 +25,24 @@ class ArgmaxCERMetric(BaseMetric):
                 pred_text = self.text_encoder.decode(log_prob_vec[:length])
             cers.append(calc_cer(target_text, pred_text))
         return sum(cers) / len(cers)
+
+
+class BeamsearchCERMetric(BaseMetric):
+    def __init__(self, text_encoder: BaseTextEncoder, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text_encoder = text_encoder
+
+    def __call__(self, log_probs: Tensor, log_probs_length: Tensor, text: List[str], **kwargs):
+        cers = []
+
+        if not hasattr(self.text_encoder, "ctc_beam_search"):
+            raise NotImplementedError
+
+        probs = torch.exp(log_probs.detach()).cpu()
+        lengths = log_probs_length.detach().numpy()
+        for prob_mat, length, target_text in zip(probs, lengths, text):
+            target_text = BaseTextEncoder.normalize_text(target_text)
+            hypots = self.text_encoder.ctc_beam_search(prob_mat, length)
+            pred_text = hypots[0].text
+            cers.append(calc_cer(target_text, pred_text))
+        return sum(cers) / len(cers)

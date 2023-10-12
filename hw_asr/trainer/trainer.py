@@ -211,6 +211,10 @@ class Trainer(BaseTrainer):
         # TODO: implement logging of beam search results
         if self.writer is None:
             return
+        
+        probs = torch.exp(log_probs.cpu())
+        beamsearch_texts = [self.text_encoder.ctc_beam_search(b_prob, length)[0].text for b_prob, length in zip(probs, log_probs_length.numpy())]
+        
         argmax_inds = log_probs.cpu().argmax(-1).numpy()
         argmax_inds = [
             inds[: int(ind_len)]
@@ -218,20 +222,25 @@ class Trainer(BaseTrainer):
         ]
         argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds]
         argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds]
-        tuples = list(zip(argmax_texts, text, argmax_texts_raw, audio_path))
+        tuples = list(zip(argmax_texts, text, argmax_texts_raw, beamsearch_texts, audio_path))
         shuffle(tuples)
         rows = {}
-        for pred, target, raw_pred, audio_path in tuples[:examples_to_log]:
+        for pred, target, raw_pred, beamsearch_pred, audio_path in tuples[:examples_to_log]:
             target = BaseTextEncoder.normalize_text(target)
             wer = calc_wer(target, pred) * 100
             cer = calc_cer(target, pred) * 100
+            bs_wer = calc_wer(target, beamsearch_pred)
+            bs_cer = calc_cer(target, beamsearch_pred)
 
             rows[Path(audio_path).name] = {
                 "target": target,
                 "raw prediction": raw_pred,
                 "predictions": pred,
+                "beamsearch predictions": beamsearch_pred,
                 "wer": wer,
                 "cer": cer,
+                "beamsearch wer": bs_wer,
+                "beamsearch cer": bs_cer
             }
         self.writer.add_table("predictions", pd.DataFrame.from_dict(rows, orient="index"))
 
