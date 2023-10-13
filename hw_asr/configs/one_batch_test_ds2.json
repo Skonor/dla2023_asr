@@ -18,7 +18,7 @@
     "type": "DeepSpeech2",
     "args": {
       "n_feats": 128,
-      "hidden_dim": 30,
+      "hidden_dim": 800,
       "num_rnss": 5
     }
   },
