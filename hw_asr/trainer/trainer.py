@@ -213,7 +213,7 @@ class Trainer(BaseTrainer):
             return
         
         probs = torch.exp(log_probs.cpu())
-        beamsearch_texts = [self.text_encoder.ctc_beam_search(b_prob, length)[0].text for b_prob, length in zip(probs, log_probs_length.numpy())]
+        beamsearch_texts = [self.text_encoder.ctc_beam_search(b_prob[:length], length)[0].text for b_prob, length in zip(probs, log_probs_length.numpy())]
         
         argmax_inds = log_probs.cpu().argmax(-1).numpy()
         argmax_inds = [

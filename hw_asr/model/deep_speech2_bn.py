@@ -51,7 +51,7 @@ class DeepSpeech2BN(BaseModel):
         x = spectrogram.transpose(1, 2).unsqueeze(1) # (b, 1, time, n_feats)
         x = self.convs(x) # (b, 32, time, features)
         x = x.transpose(1, 2).flatten(2) # (b, time, features)
-        x = self.rnn(x)[0] # (b, time, 1600)
+        x = self.rnn(x) # (b, time, 1600)
         logits = self.head(x) # (batch, time, freq)
         
         return {"logits": logits}
