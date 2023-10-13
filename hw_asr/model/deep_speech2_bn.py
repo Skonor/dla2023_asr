@@ -21,7 +21,7 @@ class Ds2Gru(nn.Module):
         return x
 
 
-class DeepSpeech2(BaseModel):
+class DeepSpeech2BN(BaseModel):
     def __init__(self, n_feats, n_class, hidden_dim=800, num_rnns=5, **batch):
         super().__init__(n_feats, n_class, **batch)
 
