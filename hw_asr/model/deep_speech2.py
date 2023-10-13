@@ -27,16 +27,18 @@ class DeepSpeech2(BaseModel):
 
 
         self.convs  = nn.Sequential(
-                      nn.Conv2d(in_channels=1, out_channels=32, kernel_size=[11, 41], stride=[2, 2]),
+                      nn.Conv2d(in_channels=1, out_channels=32, kernel_size=[11, 41], stride=[2, 2], padding=[5, 20]),
                       nn.BatchNorm2d(32),
                       nn.Hardtanh(0, 20),
-                      nn.Conv2d(in_channels=32, out_channels=32, kernel_size=[11, 21], stride=[1, 2], padding=[5, 0]),
+                      nn.Conv2d(in_channels=32, out_channels=32, kernel_size=[11, 21], stride=[1, 2], padding=[5, 10]),
                       nn.BatchNorm2d(32),
                       nn.Hardtanh(0, 20)
                     )
 
         self.rnns = nn.ModuleList()
-        input_size = 32 * ((((n_feats - 41) // 2 + 1) - 21) // 2 + 1)
+        
+        input_size_conv1 = (n_feats + 2 * self.convs[0].padding[1] - self.convs[0].kernel_size[1]) // 2 + 1
+        input_size = 32 * ((input_size_conv1 + 2 * self.convs[3].padding[1] - self.convs[3].kernel_size[1]) // 2 + 1)
         self.rnn = Ds2Gru(input_size=input_size, hidden_size=hidden_dim, num_layers=num_rnns)
 
 
@@ -44,7 +46,7 @@ class DeepSpeech2(BaseModel):
             nn.Linear(in_features=2 * hidden_dim, out_features=2 * hidden_dim),
             nn.Hardtanh(0, 20),
             nn.Linear(in_features=2 * hidden_dim, out_features=n_class)
-        )
+        )       
 
     def forward(self, spectrogram, **batch):
 
@@ -52,10 +54,11 @@ class DeepSpeech2(BaseModel):
         x = self.convs(x) # (b, 32, time, features)
         x = x.transpose(1, 2).flatten(2) # (b, time, features)
         x = self.rnn(x) # (b, time, 1600)
-        logits = self.head(x) # (batch, time, freq)
-        
+        logits = self.head(x)# (batch, time, freq)
+
         return {"logits": logits}
 
     def transform_input_lengths(self, input_lengths):
-        conv_length = (input_lengths - 10 - 1) // 2 + 1
-        return conv_length
+        conv1_length = (input_lengths + 2 * self.convs[0].padding[0] - self.convs[0].kernel_size[0]) // 2 + 1
+        conv2_length = (conv1_length + 2 * self.convs[3].padding[0] - self.convs[3].kernel_size[0]) + 1
+        return conv2_length
