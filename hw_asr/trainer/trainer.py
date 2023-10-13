@@ -229,8 +229,8 @@ class Trainer(BaseTrainer):
             target = BaseTextEncoder.normalize_text(target)
             wer = calc_wer(target, pred) * 100
             cer = calc_cer(target, pred) * 100
-            bs_wer = calc_wer(target, beamsearch_pred)
-            bs_cer = calc_cer(target, beamsearch_pred)
+            bs_wer = calc_wer(target, beamsearch_pred) * 100
+            bs_cer = calc_cer(target, beamsearch_pred) * 100
 
             rows[Path(audio_path).name] = {
                 "target": target,
