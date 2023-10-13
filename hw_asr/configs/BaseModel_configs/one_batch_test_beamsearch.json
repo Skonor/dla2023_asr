@@ -79,12 +79,14 @@
     {
      "type": "BeamsearchWERMetric",
      "args": {
+        "beam_size": 6,
         "name": "WER (beamsearch)"
      }
     },
     {
       "type": "BeamsearchCERMetric",
       "args": {
+         "beam_size": 6,
          "name": "CER (beamsearch)"
       }
      }
