@@ -36,7 +36,7 @@ class BeamsearchWERMetric(BaseMetric):
         wers = []
 
         if not hasattr(self.text_encoder, "ctc_beam_search"):
-            raise NotImplementedError
+            raise RuntimeError("beam search not implemeted for this text encoder")
 
         probs = torch.exp(log_probs.detach()).cpu()
         lengths = log_probs_length.detach().numpy()

@@ -28,7 +28,7 @@ class ArgmaxCERMetric(BaseMetric):
 
 
 class BeamsearchCERMetric(BaseMetric):
-    def __init__(self, text_encoder: BaseTextEncoder, beam_size=5, *args, **kwargs):
+    def __init__(self, text_encoder: BaseTextEncoder, beam_size: int = 5, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text_encoder = text_encoder
         self.beam_size = beam_size
@@ -37,7 +37,7 @@ class BeamsearchCERMetric(BaseMetric):
         cers = []
 
         if not hasattr(self.text_encoder, "ctc_beam_search"):
-            raise NotImplementedError
+            raise RuntimeError("beam search not implemeted for this text encoder")
 
         probs = torch.exp(log_probs.detach()).cpu()
         lengths = log_probs_length.detach().numpy()
