@@ -32,7 +32,8 @@ class LibrispeechDatasetKaggle(BaseDataset):
         self.index_path.mkdir(exist_ok=True, parents=True)
 
         if data_dir is None:
-            data_dir = self.index_path
+            data_dir = ROOT_PATH / "data" / "datasets" / "librispeech"
+            data_dir.mkdir(exist_ok=True, parents=True)
         else:
             data_dir = Path(data_dir)
 
@@ -74,7 +75,7 @@ class LibrispeechDatasetKaggle(BaseDataset):
 
         flac_dirs = set()
         for dirpath, dirnames, filenames in os.walk(str(split_dir)):
-            if any([f.endswith(".wav") for f in filenames]):
+            if any([f.endswith(".flac") for f in filenames]):
                 flac_dirs.add(dirpath)
         for flac_dir in tqdm(
                 list(flac_dirs), desc=f"Preparing librispeech folders: {part}"
@@ -85,7 +86,7 @@ class LibrispeechDatasetKaggle(BaseDataset):
                 for line in f:
                     f_id = line.split()[0]
                     f_text = " ".join(line.split()[1:]).strip()
-                    flac_path = flac_dir / f"{f_id}.wav"
+                    flac_path = flac_dir / f"{f_id}.flac"
                     t_info = torchaudio.info(str(flac_path))
                     length = t_info.num_frames / t_info.sample_rate
                     index.append(
