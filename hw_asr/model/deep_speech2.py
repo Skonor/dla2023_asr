@@ -41,12 +41,12 @@ class DeepSpeech2(BaseModel):
         input_size = 32 * ((input_size_conv1 + 2 * self.convs[3].padding[1] - self.convs[3].kernel_size[1]) // 2 + 1)
         self.rnn = Ds2Gru(input_size=input_size, hidden_size=hidden_dim, num_layers=num_rnns)
 
-
+        self.lin = nn.Linear(in_features=2 * hidden_dim, out_features=2 * hidden_dim)
+        self.bn_lin = nn.BatchNorm1d(2 * hidden_dim)
         self.head = nn.Sequential(
-            nn.Linear(in_features=2 * hidden_dim, out_features=2 * hidden_dim),
             nn.Hardtanh(0, 20),
             nn.Linear(in_features=2 * hidden_dim, out_features=n_class)
-        )       
+        )
 
     def forward(self, spectrogram, **batch):
 
@@ -54,6 +54,8 @@ class DeepSpeech2(BaseModel):
         x = self.convs(x) # (b, 32, time, features)
         x = x.transpose(1, 2).flatten(2) # (b, time, features)
         x = self.rnn(x) # (b, time, 1600)
+        x = self.lin(x)
+        x = self.bn_lin(x.transpose(1, 2)).transpose(1, 2)
         logits = self.head(x)# (batch, time, freq)
 
         return {"logits": logits}
