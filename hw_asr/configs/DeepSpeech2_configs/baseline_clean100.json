@@ -1,5 +1,5 @@
 {
-  "name": "one_batch_test",
+  "name": "baseline_clean100",
   "n_gpu": 1,
   "preprocessing": {
     "sr": 16000,
@@ -30,7 +30,7 @@
         {
           "type": "LibrispeechDataset",
           "args": {
-            "dara-dir": "/kaggle/input/librispeech",
+            "dara_dir": "/kaggle/input/librispeech",
             "part": "train-clean-100",
             "max_audio_length": 20.0,
             "max_text_length": 200
@@ -45,7 +45,7 @@
         {
           "type": "LibrispeechDataset",
           "args": {
-            "dara-dir": "/kaggle/input/librispeech",
+            "dara_dir": "/kaggle/input/librispeech",
             "part": "dev-clean"
           }
         }
