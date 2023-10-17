@@ -64,7 +64,7 @@ class LibrispeechDataset(BaseDataset):
 
     def _create_index(self, part):
         index = []
-        split_dir = self._data_dir / part
+        split_dir = self._data_dir / 'meta' / part
         if not split_dir.exists():
             self._load_part(part)
 
@@ -81,7 +81,7 @@ class LibrispeechDataset(BaseDataset):
                 for line in f:
                     f_id = line.split()[0]
                     f_text = " ".join(line.split()[1:]).strip()
-                    flac_path = flac_dir / f"{f_id}.flac"
+                    flac_path = self._data_dir / part / f"{f_id}.flac"
                     t_info = torchaudio.info(str(flac_path))
                     length = t_info.num_frames / t_info.sample_rate
                     index.append(
