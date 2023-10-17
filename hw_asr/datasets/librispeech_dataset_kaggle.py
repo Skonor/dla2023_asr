@@ -29,6 +29,7 @@ class LibrispeechDatasetKaggle(BaseDataset):
         assert part in URL_LINKS or part == 'train_all'
 
         self.index_path = ROOT_PATH / "data" / "datasets" / "librispeech"
+        self.index_path.mkdir(exist_ok=True, parents=True)
 
         if data_dir is None:
             data_dir = ROOT_PATH / "data" / "datasets" / "librispeech"
