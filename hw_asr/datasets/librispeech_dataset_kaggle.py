@@ -24,14 +24,18 @@ URL_LINKS = {
 }
 
 
-class LibrispeechDataset(BaseDataset):
+class LibrispeechDatasetKaggle(BaseDataset):
     def __init__(self, part, data_dir=None, *args, **kwargs):
         assert part in URL_LINKS or part == 'train_all'
 
+        self.index_path = ROOT_PATH / "data" / "datasets" / "librispeech"
 
         if data_dir is None:
             data_dir = ROOT_PATH / "data" / "datasets" / "librispeech"
             data_dir.mkdir(exist_ok=True, parents=True)
+        else:
+            data_dir = Path(data_dir)
+
         self._data_dir = data_dir
         if part == 'train_all':
             index = sum([self._get_or_load_index(part)
@@ -52,7 +56,7 @@ class LibrispeechDataset(BaseDataset):
         shutil.rmtree(str(self._data_dir / "LibriSpeech"))
 
     def _get_or_load_index(self, part):
-        index_path = self._data_dir / f"{part}_index.json"
+        index_path = self.index_path / f"{part}_index.json"
         if index_path.exists():
             with index_path.open() as f:
                 index = json.load(f)

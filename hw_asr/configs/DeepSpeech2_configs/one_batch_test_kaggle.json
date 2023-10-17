@@ -28,7 +28,7 @@
       "num_workers": 0,
       "datasets": [
         {
-          "type": "LibrispeechDataset",
+          "type": "LibrispeechDatasetKaggle",
           "args": {
             "data_dir": "/kaggle/input/librispeech-asr-wav-dataset",
             "part": "dev-clean",
@@ -44,7 +44,7 @@
       "num_workers": 0,
       "datasets": [
         {
-          "type": "LibrispeechDataset",
+          "type": "LibrispeechDatasetKaggle",
           "args": {
             "data_dir": "/kaggle/input/librispeech-asr-wav-dataset",
             "part": "dev-clean",
