@@ -57,14 +57,26 @@
             "data_dir": "/kaggle/input/librispeech",
             "part": "dev-clean"
           }
-        },
+        }
+      ]
+    },
+    "test-clean": {
+      "batch_size": 32,
+      "num_workers": 2,
+      "datasets": [
         {
           "type": "LibrispeechDataset",
           "args": {
             "data_dir": "/kaggle/input/librispeech",
             "part": "test-clean"
           }
-        },
+        }
+      ]
+    },
+    "test-other": {
+      "batch_size": 32,
+      "num_workers": 2,
+      "datasets": [
         {
           "type": "LibrispeechDataset",
           "args": {
@@ -103,14 +115,14 @@
     "type": "OneCycleLR",
     "args": {
       "steps_per_epoch": 100,
-      "epochs": 50,
+      "epochs": 80,
       "anneal_strategy": "cos",
       "max_lr": 3e-4,
       "pct_start": 0.2
     }
   },
   "trainer": {
-    "epochs": 50,
+    "epochs": 80,
     "save_dir": "saved/",
     "save_period": 5,
     "verbosity": 2,

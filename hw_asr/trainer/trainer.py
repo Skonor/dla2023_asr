@@ -121,7 +121,7 @@ class Trainer(BaseTrainer):
                 # because we are interested in recent train metrics
                 last_train_metrics = self.train_metrics.result()
                 self.train_metrics.reset()
-            if batch_idx >= self.len_epoch:
+            if batch_idx >= self.len_epoch - 1:
                 break
         log = last_train_metrics
 
