@@ -55,7 +55,7 @@
       }
     },
     {
-      "type": "BeamSearchWERMetric",
+      "type": "BeamsearchWERMetric",
       "args": {
         "name": "WER (beamsearch)",
         "beam_size": 500
