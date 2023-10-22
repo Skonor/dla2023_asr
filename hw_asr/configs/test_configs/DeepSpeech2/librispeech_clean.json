@@ -23,20 +23,7 @@
     }
   },
   "data": {
-    "val": {
-      "batch_size": 32,
-      "num_workers": 2,
-      "datasets": [
-        {
-          "type": "LibrispeechDataset",
-          "args": {
-            "data_dir": "/kaggle/input/librispeech",
-            "part": "dev-clean"
-          }
-        }
-      ]
-    },
-    "test-clean": {
+    "test": {
       "batch_size": 32,
       "num_workers": 2,
       "datasets": [
@@ -45,19 +32,6 @@
           "args": {
             "data_dir": "/kaggle/input/librispeech",
             "part": "test-clean"
-          }
-        }
-      ]
-    },
-    "test-other": {
-      "batch_size": 32,
-      "num_workers": 2,
-      "datasets": [
-        {
-          "type": "LibrispeechDataset",
-          "args": {
-            "data_dir": "/kaggle/input/librispeech",
-            "part": "test-other"
           }
         }
       ]
