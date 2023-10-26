@@ -58,7 +58,7 @@
       "type": "LMBeamsearchWERMetric",
       "args": {
         "name": "WER (LM beamsearch)",
-        "beam_size": 100
+        "beam_size": 2000
       }
     }
   ],
