@@ -76,26 +76,11 @@ def main(config, out_file):
 
             for met in metrics:
                 evaluation_metrics.update(met.name, met(**batch))
-
-            batch["probs"] = batch["log_probs"].exp().cpu()
-            batch["argmax"] = batch["probs"].argmax(-1)
-            for i in range(len(batch["text"])):
-                argmax = batch["argmax"][i]
-                argmax = argmax[: int(batch["log_probs_length"][i])]
-                results.append(
-                    {
-                        "ground_trurh": batch["text"][i],
-                        "pred_text_argmax": text_encoder.ctc_decode(argmax.cpu().numpy())
-                    }
-                )
-
-
-    with Path(out_file).open("w") as f:
-        json.dump(results, f, indent=2)
-        
+                
     if writer is not None:    
         for metric_name in evaluation_metrics.keys():
             writer.add_scalar(f"{metric_name}", evaluation_metrics.avg(metric_name))
+            print(f"{metric_name}:", evaluation_metrics.avg(metric_name))
     
 
 if __name__ == "__main__":
