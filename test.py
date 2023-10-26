@@ -58,6 +58,7 @@ def main(config, out_file):
             )
             batch["probs"] = batch["log_probs"].exp().cpu()
             batch["argmax"] = batch["probs"].argmax(-1)
+            lm_preds = text_encoder.ctc_lm_beam_search(batch['log_probs'].cpu(), batch['log_probs_length'].cpu(), beam_size=100) 
             for i in range(len(batch["text"])):
                 argmax = batch["argmax"][i]
                 argmax = argmax[: int(batch["log_probs_length"][i])]
@@ -68,6 +69,7 @@ def main(config, out_file):
                         "pred_text_beam_search": text_encoder.ctc_beam_search(
                             batch["probs"][i], batch["log_probs_length"][i], beam_size=10
                         )[:10],
+                        "pred_text_lm": lm_preds[i]
                     }
                 )
     with Path(out_file).open("w") as f:

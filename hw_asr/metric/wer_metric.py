@@ -58,7 +58,7 @@ class LMBeamsearchWERMetric(BaseMetric):
         wers = []
 
         if not hasattr(self.text_encoder, "ctc_lm_beam_search"):
-            raise RuntimeError("beam search not implemeted for this text encoder")
+            raise RuntimeError("LM beam search not implemeted for this text encoder")
 
         log_probs = log_probs.detach().cpu()
         lengths = log_probs_length.detach().numpy()
