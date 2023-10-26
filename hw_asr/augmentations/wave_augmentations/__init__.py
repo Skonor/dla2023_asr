@@ -1,5 +1,12 @@
-from hw_asr.augmentations.wave_augmentations.Gain import Gain
+from hw_asr.augmentations.wave_augmentations.Gain import Gain, RandomGain
+from hw_asr.augmentations.wave_augmentations.PitchShift import PitchShift, RandomPitchShift
+from hw_asr.augmentations.wave_augmentations.Noise import Noise, RandomNoise
 
 __all__ = [
-    "Gain"
+    "Gain",
+    "RandomGain",
+    "PitchShift",
+    "RandomPitchShift",
+    "Noise",
+    "RandomNoise"
 ]

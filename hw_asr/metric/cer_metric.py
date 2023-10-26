@@ -47,3 +47,24 @@ class BeamsearchCERMetric(BaseMetric):
             pred_text = hypots[0].text
             cers.append(calc_cer(target_text, pred_text))
         return sum(cers) / len(cers)
+    
+
+class LMBeamsearchСERMetric(BaseMetric):
+    def __init__(self, text_encoder: BaseTextEncoder, beam_size: int = 100, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text_encoder = text_encoder
+        self.beam_size = beam_size
+
+    def __call__(self, log_probs: Tensor, log_probs_length: Tensor, text: List[str], **kwargs):
+        сers = []
+
+        if not hasattr(self.text_encoder, "ctc_lm_beam_search"):
+            raise RuntimeError("LM beam search not implemeted for this text encoder")
+
+        log_probs = log_probs.detach().cpu()
+        lengths = log_probs_length.detach().numpy()
+        pred_list = self.text_encoder.ctc_lm_beam_search(log_probs=log_probs, probs_length=lengths, beam_size=self.beam_size)
+        for pred_text, target_text in zip(pred_list, text):
+            target_text = BaseTextEncoder.normalize_text(target_text)
+            сers.append(calc_cer(target_text, pred_text))
+        return sum(сers) / len(сers)

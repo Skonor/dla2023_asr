@@ -1,9 +1,14 @@
 from typing import List, NamedTuple
 from collections import defaultdict
+from pyctcdecode import build_ctcdecoder
+import multiprocessing
 
 import torch
 
 from .char_text_encoder import CharTextEncoder
+from hw_asr.utils import ROOT_PATH
+
+
 
 
 class Hypothesis(NamedTuple):
@@ -19,6 +24,10 @@ class CTCCharTextEncoder(CharTextEncoder):
         vocab = [self.EMPTY_TOK] + list(self.alphabet)
         self.ind2char = dict(enumerate(vocab))
         self.char2ind = {v: k for k, v in self.ind2char.items()}
+
+        self.lm_path = ROOT_PATH / 'data' / 'LMs' / '3-gram.pruned.1e-7.arpa'
+        self.lm_loaded = False
+        self.lm_decoder = None
 
     def ctc_decode(self, inds: List[int]) -> str:
         result = []
@@ -79,3 +88,23 @@ class CTCCharTextEncoder(CharTextEncoder):
             hypos.append(Hypothesis(text, prob))
 
         return sorted(hypos, key=lambda x: x.prob, reverse=True)
+    
+    
+    def ctc_lm_beam_search(self, log_probs: torch.tensor, probs_length: torch.tensor, beam_size = 10) -> List[str]:
+
+        if not self.lm_loaded:
+            if not self.lm_path.exists():
+                raise RuntimeError("LM not loaded. Load it by running scripts/load_lm.py")
+            labels = [""] + list(self.alphabet)
+            labels =  list(map(lambda x: x.upper(), labels))
+            self.lm_decoder = build_ctcdecoder(labels=labels, kenlm_model_path=str(self.lm_path))
+            self.lm_loaded = True
+
+        logits_list = [log_probs[i][:probs_length[i]].numpy() for i in range(len(probs_length))]
+        
+        with multiprocessing.get_context("fork").Pool() as pool:
+            pred_list = self.lm_decoder.decode_batch(pool, logits_list, beam_width=beam_size)
+        
+        pred_list = list(map(lambda x: x.lower(), pred_list))
+
+        return pred_list
