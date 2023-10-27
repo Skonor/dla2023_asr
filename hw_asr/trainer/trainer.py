@@ -208,7 +208,7 @@ class Trainer(BaseTrainer):
             *args,
             **kwargs,
     ):
-        # TODO: implement logging of beam search results
+        
         if self.writer is None:
             return
         
@@ -225,7 +225,7 @@ class Trainer(BaseTrainer):
         tuples = list(zip(argmax_texts, text, argmax_texts_raw, beamsearch_texts, audio_path))
         shuffle(tuples)
         rows = {}
-        for pred, target, raw_pred, beamsearch_pred, audio_path in tuples[:examples_to_log]:
+        for pred, target, raw_pred, beamsearch_pred, audio_path, audio in tuples[:examples_to_log]:
             target = BaseTextEncoder.normalize_text(target)
             wer = calc_wer(target, pred) * 100
             cer = calc_cer(target, pred) * 100
@@ -233,6 +233,8 @@ class Trainer(BaseTrainer):
             bs_cer = calc_cer(target, beamsearch_pred) * 100
 
             rows[Path(audio_path).name] = {
+                "orig_audio": self.writer.wandb.Audio(audio_path), 
+                "augm_audio": self.writer.wandb.Audio(audio.squeeze().numpy(), sample_rate=16000),
                 "target": target,
                 "raw prediction": raw_pred,
                 "predictions": pred,
