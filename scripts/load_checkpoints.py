@@ -1,5 +1,5 @@
 import gdown
-import shuitl
+import shutil
 import os
 from pathlib import Path
 
@@ -17,7 +17,7 @@ def main():
         model_pth = checkpoint_dir / 'model_weights.pth'
         if not model_pth.exists():
             gdown.download(URL_LINKS[name], zip_pth, quiet=False)
-            shuitl.unpack_archive(zip_pth, checkpoint_dir, "zip")
+            shutil.unpack_archive(zip_pth, checkpoint_dir, "zip")
             os.remove(zip_pth)
 
 if __name__ == "__main__":
