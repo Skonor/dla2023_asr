@@ -15,5 +15,6 @@ pyctcdecode
 torchaudio~=0.11.0
 pillow
 wget
+gdown
 
 https://github.com/kpu/kenlm/archive/master.zip
