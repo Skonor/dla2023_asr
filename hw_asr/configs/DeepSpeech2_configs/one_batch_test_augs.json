@@ -1,5 +1,5 @@
 {
-  "name": "one_batch_test",
+  "name": "one_batch_test_augs",
   "n_gpu": 1,
   "preprocessing": {
     "sr": 16000,
@@ -11,7 +11,14 @@
     "log_spec": true
   },
   "augmentations": {
-    "wave": [],
+    "wave": [
+      {
+        "type": "Noise"
+      },
+      {
+        "type": "PitchShift"
+      }
+    ],
     "spectrogram": []
   },
   "arch": {
@@ -28,9 +35,9 @@
       "num_workers": 0,
       "datasets": [
         {
-          "type": "LibrispeechDatasetKaggle",
+          "type": "LibrispeechDataset",
           "args": {
-            "data_dir": "/kaggle/input/librispeech-asr-wav-dataset",
+            "data_dir": "/kaggle/input/librispeech",
             "part": "dev-clean",
             "max_audio_length": 20.0,
             "max_text_length": 200,
@@ -44,9 +51,9 @@
       "num_workers": 0,
       "datasets": [
         {
-          "type": "LibrispeechDatasetKaggle",
+          "type": "LibrispeechDataset",
           "args": {
-            "data_dir": "/kaggle/input/librispeech-asr-wav-dataset",
+            "data_dir": "/kaggle/input/librispeech",
             "part": "dev-clean",
             "max_audio_length": 20.0,
             "max_text_length": 200,
@@ -84,14 +91,14 @@
     "type": "OneCycleLR",
     "args": {
       "steps_per_epoch": 100,
-      "epochs": 50,
+      "epochs": 10,
       "anneal_strategy": "cos",
       "max_lr": 1e-2,
       "pct_start": 0.2
     }
   },
   "trainer": {
-    "epochs": 50,
+    "epochs": 10,
     "save_dir": "saved/",
     "save_period": 5,
     "verbosity": 2,
