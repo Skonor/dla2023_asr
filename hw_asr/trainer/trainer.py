@@ -204,6 +204,7 @@ class Trainer(BaseTrainer):
             log_probs,
             log_probs_length,
             audio_path,
+            audio,
             examples_to_log=10,
             *args,
             **kwargs,
@@ -222,7 +223,7 @@ class Trainer(BaseTrainer):
         ]
         argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds]
         argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds]
-        tuples = list(zip(argmax_texts, text, argmax_texts_raw, beamsearch_texts, audio_path))
+        tuples = list(zip(argmax_texts, text, argmax_texts_raw, beamsearch_texts, audio_path, audio))
         shuffle(tuples)
         rows = {}
         for pred, target, raw_pred, beamsearch_pred, audio_path, audio in tuples[:examples_to_log]:
