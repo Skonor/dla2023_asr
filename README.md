@@ -1,76 +1,85 @@
-# ASR project barebones
+
+## Overview
+
+This repo contains framework for ASR training as well as implemented training and evaluation procedure for DeepSpeech2 on librispeech dataset.
+
+Repo contains following features:
+
+1. Beamsearch and Beamsearch with language model
+2. Noise, Pitch Shift, Gain and TimeStretch augmentations (as well as their random versions)
+
 
 ## Installation guide
-
-< Write your installation guide here >
 
 ```shell
 pip install -r ./requirements.txt
 ```
 
-## Recommended implementation order
+To load LM model for beamsearch run:
+ ```shell
+python scripts/load_lm.py
+ ```
 
-You might be a little intimidated by the number of folders and classes. Try to follow this steps to gradually undestand
-the workflow.
+To load checkpoints run:
+```shell
+python scripts/load_chheckpoints.py
+```
 
-1) Test `hw_asr/tests/test_dataset.py`  and `hw_asr/tests/test_config.py` and make sure everythin works for you
-2) Implement missing functions to fix tests in  `hw_asr\tests\test_text_encoder.py`
-3) Implement missing functions to fix tests in  `hw_asr\tests\test_dataloader.py`
-4) Implement functions in `hw_asr\metric\utils.py`
-5) Implement missing function to run `train.py` with a baseline model
-6) Write your own model and try to overfit it on a single batch
-7) Implement ctc beam search and add metrics to calculate WER and CER over hypothesis obtained from beam search.
-8) ~~Pain and suffering~~ Implement your own models and train them. You've mastered this template when you can tune your
-   experimental setup just by tuning `configs.json` file and running `train.py`
-9) Don't forget to write a report about your work
-10) Get hired by Google the next day
 
-## Before submitting
+## Training
+To reproduce training do the following (All training was done on kaggle with librispeech dataset: [insert link])
 
-0) Make sure your projects run on a new machine after complemeting the installation guide or by 
-   running it in docker container.
-1) Search project for `# TODO: your code here` and implement missing functionality
-2) Make sure all tests work without errors
-   ```shell
-   python -m unittest discover hw_asr/tests
-   ```
-3) Make sure `test.py` works fine and works as expected. You should create files `default_test_config.json` and your
-   installation guide should download your model checpoint and configs in `default_test_model/checkpoint.pth`
-   and `default_test_model/config.json`.
-   ```shell
-   python test.py \
-      -c default_test_config.json \
-      -r default_test_model/checkpoint.pth \
-      -t test_data \
-      -o test_result.json
-   ```
-4) Use `train.py` for training
+1. Train DeepSpeech2 on librispeech clean100 and clean360 for 80 epochs (len epoch = 100 steps)
+
+```shell
+python train.py -c hw_asr/configs/DeepSpeech2_configs/baseline_clean360.json
+```
+
+## Evaluation
+
+For evaluating models on librispeech test-clean and test-other do th following:
+
+1. Load LM for beamsearch:
+ ```shell
+python scripts/load_lm.py
+ ```
+
+2. (Optional) Load checkpoint from training:
+```shell
+python scripts/load_chheckpoints.py
+```
+This will create DeepSpeech2 in saved/models/checkpoints contaning model weigths file and training config
+
+You can skip this step if you are using you own model
+
+3. Run test.py (for test-other use librispeech_other.json config):
+```shell
+python test.py -b 32 -c hw_asr/configs/test_configs/DeepSpeech2/librispeech_clean.json -r saved/checkpoints/DeepSpeech2/model_weights.pth
+```
+
+This will create output.json file containing argmax, beamsearch (beam_size=10) and LM beamsearch (beam_size=100) predictions
+
+4. Run evaluation.py:
+```shell
+python evaluation.py -o output.json
+```
+This will print out WER and CER metrics for each of prediction methods
+
+
+## Results
+
+For DeepSpeech2 model trained on clean part of the librispeech we get the following results:
+
+| Method | test-clean CER| test-clean WER | test-other CER | test-other WER |
+|--------|---------------|----------------|----------------|----------------|
+| Argmax |        8.43   |     26.64      |     24.86      |     57.48      |
+| Beamsearch |  8.23     |     25.90      |     24.35      |     56.37      |
+| LM Beamsearch |  5.80  |     14.45      |     21.12      |     39.35      |
 
 ## Credits
 
 This repository is based on a heavily modified fork
 of [pytorch-template](https://github.com/victoresque/pytorch-template) repository.
-
-## Docker
-
-You can use this project with docker. Quick start:
-
-```bash 
-docker build -t my_hw_asr_image . 
-docker run \
-   --gpus '"device=0"' \
-   -it --rm \
-   -v /path/to/local/storage/dir:/repos/asr_project_template/data/datasets \
-   -e WANDB_API_KEY=<your_wandb_api_key> \
-	my_hw_asr_image python -m unittest 
-```
-
-Notes:
-
-* `-v /out/of/container/path:/inside/container/path` -- bind mount a path, so you wouldn't have to download datasets at
-  the start of every docker run.
-* `-e WANDB_API_KEY=<your_wandb_api_key>` -- set envvar for wandb (if you want to use it). You can find your API key
-  here: https://wandb.ai/authorize
 
 ## TODO
 
