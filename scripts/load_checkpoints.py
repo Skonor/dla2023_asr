@@ -5,7 +5,8 @@ from pathlib import Path
 
 
 URL_LINKS = {
-    'DeepSpeech2_clean': 'https://drive.google.com/uc?id=16N0g78RAdXeJkRFmPwzk2BstvMA1jB0A'
+    'DeepSpeech2_clean': 'https://drive.google.com/uc?id=16N0g78RAdXeJkRFmPwzk2BstvMA1jB0A',
+    'DeepSpeech2_clean_other': 'https://drive.google.com/uc?id=1lHzfCwiyUfod0wrgsmIQfigNo7oHfNmg'
 }
 
 def main():
