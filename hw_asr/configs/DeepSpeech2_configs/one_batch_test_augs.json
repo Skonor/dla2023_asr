@@ -13,10 +13,16 @@
   "augmentations": {
     "wave": [
       {
-        "type": "Noise"
+        "type": "Noise",
+        "args": {
+          
+        }
       },
       {
-        "type": "PitchShift"
+        "type": "PitchShift",
+        "args": {
+
+        }
       }
     ],
     "spectrogram": []
