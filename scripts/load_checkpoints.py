@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 
-URL_LINKS: {
+URL_LINKS = {
     'DeepSpeech2_clean': 'https://drive.google.com/uc?id=16N0g78RAdXeJkRFmPwzk2BstvMA1jB0A'
 }
 
