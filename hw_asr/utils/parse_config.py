@@ -15,13 +15,14 @@ from hw_asr.utils import read_json, write_json, ROOT_PATH
 
 
 class ConfigParser:
-    def __init__(self, config, resume=None, modification=None, run_id=None):
+    def __init__(self, config, resume=None, finetune=None, modification=None, run_id=None):
         """
         class to parse configuration json file. Handles hyperparameters for training,
         initializations of modules, checkpoint saving and logging module.
         :param config: Dict containing configurations, hyperparameters for training.
                        contents of `config.json` file for example.
         :param resume: String, path to the checkpoint being loaded.
+        :param finetune: String, path to the checkpoint of pretrained model
         :param modification: Dict {keychain: value}, specifying position values to be replaced
                              from config dict.
         :param run_id: Unique Identifier for training processes.
@@ -31,6 +32,7 @@ class ConfigParser:
         self._config = _update_config(config, modification)
         self.resume = resume
         self._text_encoder = None
+        self.finetune = finetune
 
         # set save_dir where trained model and log will be saved.
         save_dir = Path(self.config["trainer"]["save_dir"])
@@ -75,6 +77,11 @@ class ConfigParser:
             resume = None
             cfg_fname = Path(args.config)
 
+        if args.finetune is not None:
+            finetune = Path(args.finetune)
+        else:
+            finetune = None
+
         config = read_json(cfg_fname)
         if args.config and resume:
             # update new config for fine-tuning
@@ -84,7 +91,7 @@ class ConfigParser:
         modification = {
             opt.target: getattr(args, _get_opt_name(opt.flags)) for opt in options
         }
-        return cls(config, resume, modification)
+        return cls(config, resume, finetune, modification)
 
     @staticmethod
     def init_obj(obj_dict, default_module, *args, **kwargs):

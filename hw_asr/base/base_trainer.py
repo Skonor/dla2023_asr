@@ -55,6 +55,9 @@ class BaseTrainer:
         if config.resume is not None:
             self._resume_checkpoint(config.resume)
 
+        if config.finetune is not None:
+            self._get_ft_model(config.finetune)
+
     @abstractmethod
     def _train_epoch(self, epoch):
         """
@@ -188,4 +191,13 @@ class BaseTrainer:
 
         self.logger.info(
             "Checkpoint loaded. Resume training from epoch {}".format(self.start_epoch)
+        )
+
+    def _get_ft_model(self, finetuing_path):
+        finetuing_path = str(finetuing_path)
+        self.logger.info("Loading checkpoint: {} ...".format(finetuing_path))
+        checkpoint = torch.load(finetuing_path, self.device)
+        self.model.load_state_dict(checkpoint["state_dict"])
+        self.logger.info(
+            "Checkpoint loaded."
         )
